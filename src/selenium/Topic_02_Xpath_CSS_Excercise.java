@@ -62,9 +62,37 @@ public class Topic_02_Xpath_CSS_Excercise {
 		Assert.assertEquals(incorrectPassMsg, "Invalid login or password.");
 	}
 	
+	@Test
+	public void TC_05_CreateAnAccount() throws Exception {
+		driver.findElement(By.xpath("//div[@class='footer']//a[text()='My Account']")).click();
+		driver.findElement(By.xpath("//span[text()='Create an Account']")).click();
+		driver.findElement(By.id("firstname")).sendKeys("Thao");
+		driver.findElement(By.id("middlename")).sendKeys("Huong");
+		driver.findElement(By.id("lastname")).sendKeys("Tran");
+		driver.findElement(By.id("email_address")).sendKeys("thaotran" + randomNumber() + "@gmail.com");
+		driver.findElement(By.id("password")).sendKeys("123456");
+		driver.findElement(By.id("confirmation")).sendKeys("123456");
+		driver.findElement(By.xpath("//button[@title='Register']")).click();
+		//Check Register successfully
+		String successMsg = driver.findElement(By.xpath("//span[text()='Thank you for registering with Main Website Store.']")).getText();
+		Assert.assertEquals(successMsg, "Thank you for registering with Main Website Store.");
+		//Log out
+		driver.findElement(By.xpath("//div[@class='account-cart-wrapper']//span[text()='Account']")).click();
+		driver.findElement(By.xpath("//a[@title='Log Out']")).click();	
+		//Check navigate home page
+		String homepageText = driver.findElement(By.xpath("//h1[contains(text(),'Login or Create an Account')]")).getText();
+		Assert.assertEquals(homepageText, "Login or Create an Account");
+	}
+	
 	@AfterClass
 	public void afterTest() {
 		driver.quit();
 	}
+	
+	public int randomNumber() {
+		int random = (int )(Math.random() * 50 + 1);
+		return random;
+	}
+	
 
 }
