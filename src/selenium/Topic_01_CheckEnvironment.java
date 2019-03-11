@@ -14,6 +14,7 @@ public class Topic_01_CheckEnvironment {
 
 	@BeforeTest
 	public void beforeTest() {
+		System.setProperty("webdriver.gecko.driver", "D:\\Data_THAO\\AUTOMATION_TEST\\PROJECTS\\geckodriver.exe");
 		driver = new FirefoxDriver();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.manage().window().maximize();

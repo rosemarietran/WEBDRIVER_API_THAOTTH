@@ -6,15 +6,16 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.testng.Assert;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class Topic_02_Xpath_CSS_Excercise {
 	WebDriver driver;
 
-	@BeforeClass
+	@BeforeTest
 	public void beforeTest() {
+		System.setProperty("webdriver.gecko.driver", "D:\\Data_THAO\\AUTOMATION_TEST\\PROJECTS\\geckodriver.exe");
 		driver = new FirefoxDriver();
 		driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 		driver.manage().window().maximize();
@@ -73,18 +74,20 @@ public class Topic_02_Xpath_CSS_Excercise {
 		driver.findElement(By.id("password")).sendKeys("123456");
 		driver.findElement(By.id("confirmation")).sendKeys("123456");
 		driver.findElement(By.xpath("//button[@title='Register']")).click();
+		
 		//Check Register successfully
-		String successMsg = driver.findElement(By.xpath("//span[text()='Thank you for registering with Main Website Store.']")).getText();
+		String successMsg = driver.findElement(By.xpath("//li[@class='success-msg']//span")).getText();
 		Assert.assertEquals(successMsg, "Thank you for registering with Main Website Store.");
+		
 		//Log out
 		driver.findElement(By.xpath("//div[@class='account-cart-wrapper']//span[text()='Account']")).click();
 		driver.findElement(By.xpath("//a[@title='Log Out']")).click();	
+		
 		//Check navigate home page
-		String homepageText = driver.findElement(By.xpath("//h1[contains(text(),'Login or Create an Account')]")).getText();
-		Assert.assertEquals(homepageText, "Login or Create an Account");
+		Assert.assertTrue(driver.findElement(By.xpath("//div[@class='page-title']//img[contains(@src,'logo.png')]")).isDisplayed());
 	}
 	
-	@AfterClass
+	@AfterTest
 	public void afterTest() {
 		driver.quit();
 	}
