@@ -115,7 +115,6 @@ public class Topic_05_HandleDropDown_Exercise {
 		Assert.assertTrue(isElementDisplayed("//li[@class='dropdown-toggle' and contains(text(),'Second Option')]"));
 	}
 
-	@Test
 	public void TC_06_CustomMultipleItem() throws Exception {
 		driver.get("http://multiple-select.wenzhixin.net.cn/examples/#basic.html");
 		By contentIframeXpath = By.xpath("//div[@class='content']//iframe");
@@ -123,11 +122,13 @@ public class Topic_05_HandleDropDown_Exercise {
 		String[] items = { "January", "April", "July" };
 		String[] newItems = { "January", "April", "July", "October", "November" };
 
+		String itemSelectedXpath = "//li[@class='selected']//input";
+
 		WebElement contentIframe = driver.findElement(contentIframeXpath);
 		driver.switchTo().frame(contentIframe);
 
 		selectMultipleItemCustomInDropdown("//button[@class='ms-choice']", "//div[@class='ms-drop bottom']//span",
-				items);
+				items, itemSelectedXpath);
 		Assert.assertTrue(checkItemSelected(items));
 
 		driver.navigate().refresh();
@@ -135,8 +136,72 @@ public class Topic_05_HandleDropDown_Exercise {
 		driver.switchTo().frame(contentIframeRefresh);
 
 		selectMultipleItemCustomInDropdown("//button[@class='ms-choice']", "//div[@class='ms-drop bottom']//span",
-				newItems);
+				newItems, itemSelectedXpath);
 		Assert.assertTrue(checkItemSelected(newItems));
+	}
+
+	@Test
+	public void TC_07_SemanticUI() throws Exception {
+		driver.get("https://semantic-ui.com/modules/dropdown.html#/definition");
+		driver.findElement(By.xpath("//a[text()='Examples']")).click();
+
+		String selectionParentDropdownXpath = "//div[@class='ui fluid normal dropdown selection multiple']";
+		String allItemsInSelectionDropdownXpath = "//div[@class='menu transition visible']//div[@class='item']";
+		String[] items1 = { "Graphic Design", "Javascript"};
+
+		String searchSelectionParentDropdownXpath = "//div[@class='ui fluid multiple search normal selection dropdown']";
+		String allItemsInSearchSelectionXpath = "//div[@class='menu transition visible']//div[@class='item']";
+		String allItemsFilteredInSearchSelectionXpath = "//div[@class='menu transition visible']//div[text()='";
+		String[] items2 = { "Antigua", "Benin" };
+		String itemSelectedXpath1 = "//div[@class='ui fluid normal dropdown selection multiple']//a[@class='ui label transition visible']";
+		String itemSelectedXpath2 = "//div[@class='ui fluid multiple search normal selection dropdown active visible']//a[@class='ui label transition visible']";
+
+		selectMultipleItemCustomInDropdown(selectionParentDropdownXpath, allItemsInSelectionDropdownXpath, items1,
+				itemSelectedXpath1);
+//		driver.findElement(By.xpath(
+//				"//div[@class='ui fluid multiple search normal selection dropdown']//input[@class='search']"))
+//				.sendKeys("Vietnam");
+		selectItemWithEditableDropdown(
+				"//div[@class='ui fluid multiple search normal selection dropdown']//input[@class='search']",
+				itemSelectedXpath2, allItemsFilteredInSearchSelectionXpath, "Vietnam");
+		selectMultipleItemCustomInDropdown(searchSelectionParentDropdownXpath, allItemsInSearchSelectionXpath, items2,
+				itemSelectedXpath2);
+	}
+
+	public void selectItemWithEditableDropdown(String parentXpath, String selectedItemsXpath,
+			String itemFilteredInSearchSelectionXpath, String expectedItemValue) {
+		// Scroll tới dropdown và click
+		WebElement parentDropdown = driver.findElement(By.xpath(parentXpath));
+		jsExecutor.executeScript("arguments[0].click()", parentDropdown);
+
+		// Nhập text cần tìm kiếm vào textbox của dropdown
+		parentDropdown.sendKeys(expectedItemValue);
+
+		String expectedItemXpath = itemFilteredInSearchSelectionXpath + expectedItemValue + "']";
+
+		// Chờ giá trị thỏa mãn text nhập vào được load ra thành công
+		waitExplicit.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(expectedItemXpath)));
+
+		// Click chọn item mong muốn
+		WebElement expectedItem = driver.findElement(By.xpath(expectedItemXpath));
+		if (expectedItem.isDisplayed()) {
+			expectedItem.click();
+		} else {
+			System.out.println("Không tồn tại giá trị mong muốn trong dropdown!");
+		}
+
+		// Kiểm tra item đã được chọn chưa
+		waitExplicit.until(ExpectedConditions.presenceOfAllElementsLocatedBy(
+				By.xpath("//div[@class='ui sub header' and text() = 'Search Selection']")));
+		WebElement selectedItem = driver.findElement(By.xpath(
+				"//div[@class='ui sub header' and text() = 'Search Selection']/following-sibling::div/child::a"));
+		System.out.println(expectedItemValue);
+		System.out.println(selectedItem.getText());
+		if (selectedItem.isDisplayed() && expectedItemValue.equals(selectedItem.getText())) {
+			System.out.println("Chọn giá trị cần chọn thành công!");
+		} else {
+			System.out.println("Chưa chọn được giá trị cần chọn");
+		}
 	}
 
 	public void selectItemCustomDropdown(String parentXpath, String allItemsXpath, String expectedItemValue)
@@ -176,14 +241,14 @@ public class Topic_05_HandleDropDown_Exercise {
 
 	}
 
-	public void selectMultipleItemCustomInDropdown(String parentXpath, String allItemsXpath, String[] expectedItemValue)
-			throws Exception {
+	public void selectMultipleItemCustomInDropdown(String parentXpath, String allItemsXpath, String[] expectedItemValue,
+			String itemSelectedXpath) throws Exception {
 		// Click vao dropdown de xo het gia tri ra
-		WebElement parentDropdown = driver.findElement(By.xpath(parentXpath));
-		jsExecutor.executeScript("arguments[0].click();", parentDropdown);
-
-		// Cho tat ca cac gia tri trong dropdown duoc load ra het
-		waitExplicit.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(allItemsXpath)));
+//		WebElement parentDropdown = driver.findElement(By.xpath(parentXpath));
+//		jsExecutor.executeScript("arguments[0].click();", parentDropdown);
+//
+//		// Cho tat ca cac gia tri trong dropdown duoc load ra het
+//		waitExplicit.until(ExpectedConditions.presenceOfAllElementsLocatedBy(By.xpath(allItemsXpath)));
 
 		List<WebElement> allItems = driver.findElements(By.xpath(allItemsXpath));
 
@@ -199,7 +264,7 @@ public class Topic_05_HandleDropDown_Exercise {
 					jsExecutor.executeScript("arguments[0].click();", childElement);
 					Thread.sleep(1500);
 
-					List<WebElement> itemSelected = driver.findElements(By.xpath("//li[@class='selected']//input"));
+					List<WebElement> itemSelected = driver.findElements(By.xpath(itemSelectedXpath));
 					System.out.println("Total selected items = " + itemSelected.size());
 
 					if (expectedItemValue.length == itemSelected.size()) {
@@ -243,6 +308,6 @@ public class Topic_05_HandleDropDown_Exercise {
 
 	@AfterTest
 	public void afterTest() {
-		driver.quit();
+		// driver.quit();
 	}
 }
