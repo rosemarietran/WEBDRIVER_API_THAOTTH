@@ -36,8 +36,7 @@ public class Topic_08_Iframe_Excersise {
 		driver.get("https://www.hdfcbank.com/");
 		driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 		// Khai báo notification Iframe
-		List<WebElement> notificationIframe = driver
-				.findElements(By.xpath("//iframe[@id='vizury-notification-template']"));
+		List<WebElement> notificationIframe = driver.findElements(By.xpath("//iframe[@id='vizury-notification-template']"));
 		int notificationFrameSize = notificationIframe.size();
 		System.out.println("Notification frame displayed " + notificationFrameSize);
 

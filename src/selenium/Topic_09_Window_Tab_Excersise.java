@@ -59,14 +59,16 @@ public class Topic_09_Window_Tab_Excersise {
 
 	}
 
+	@Test
 	public void TC_02_SwitchWindow() throws Exception {
 		// Step 01 - Truy cập vào trang: http://www.hdfcbank.com/
 		driver.get("http://www.hdfcbank.com/");
 		String parentID = driver.getWindowHandle();
 
 		// Step 02 - Kiểm tra và close quảng cáo nếu có xuất hiện
-		WebElement popupCloseBtn = driver.findElement(By.xpath("//img[@class='popupCloseButton']"));
-		if (popupCloseBtn.isDisplayed()) {
+		List<WebElement> popupCloseBtn = driver.findElements(By.xpath("//img[@class='popupCloseButton']"));
+		int popupCloseBtnSize = popupCloseBtn.size();
+		if (popupCloseBtnSize > 0) {
 			driver.findElement(By.xpath("//img[@class='popupCloseButton']")).click();
 		}
 
@@ -96,29 +98,29 @@ public class Topic_09_Window_Tab_Excersise {
 		Assert.assertTrue(closeAllWithoutParentWindows(parentID));
 	}
 
-	@Test
+	
 	public void TC_03() throws Exception {
-//			Step 01 - Truy cập vào trang: http://live.guru99.com/index.php/
+		//Step 01 - Truy cập vào trang: http://live.guru99.com/index.php/
 
 		driver.get("http://live.guru99.com/index.php/");
 		String parentID = driver.getWindowHandle();
-//			Step 02 - Click vào Mobile tab
+		//Step 02 - Click vào Mobile tab
 		driver.findElement(By.xpath("//a[text()='Mobile']")).click();
 
-//			Step 03 - Add sản phẩm Sony Xperia vào để Compare (Add to Compare)
+		//Step 03 - Add sản phẩm Sony Xperia vào để Compare (Add to Compare)
 		driver.findElement(By.xpath(
 				"//a[text()='Sony Xperia']//parent::h2//following-sibling::div[@class='actions']//ul[@class='add-to-links']//a[text()='Add to Compare']"))
 				.click();
 
-//			Step 04 - Add sản phẩm Samsung Galaxy vào để Compare (Add to Compare)
+		//Step 04 - Add sản phẩm Samsung Galaxy vào để Compare (Add to Compare)
 		driver.findElement(By.xpath(
 				"//a[text()='Samsung Galaxy']//parent::h2//following-sibling::div[@class='actions']//ul[@class='add-to-links']//a[text()='Add to Compare']"))
 				.click();
 
-//			Step 05 - Click to Compare button
+		//Step 05 - Click to Compare button
 		driver.findElement(By.xpath("//span[text()='Compare']")).click();
 
-//				Step 06 - Switch qa cửa sổ mới (chứa 2 sản phẩm đã được Add vào để Compare)
+		//Step 06 - Switch qa cửa sổ mới (chứa 2 sản phẩm đã được Add vào để Compare)
 		switchToWindowByTitle("Products Comparison List - Magento Commerce");
 		Thread.sleep(2000);
 
